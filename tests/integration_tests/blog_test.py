@@ -1,35 +1,64 @@
-import unittest
+__author__ = "Mihail Mihaylov"
 
+import unittest
 from blog import Blog
 
 
-class TestBlog(unittest.TestCase):
+class TestBlogIntegration(unittest.TestCase):
     def setUp(self) -> None:
-        self.blog = Blog('Test', 'Test Author')
+        self.blog = Blog("Test", "Test Author")
 
     def tearDown(self) -> None:
         del self.blog
 
-    def test_create_post_in_blog(self):
-        self.blog.create_post('Test post', 'Test Content')
-        self.assertEqual(len(self.blog.posts), 1)
-        self.assertEqual(self.blog.posts[0].title, 'Test post')
-        self.assertEqual(self.blog.posts[0].content, 'Test Content')
+    # --- create_post (split) ---
 
-    def test_json_no_post(self):
-        expected = {'title': 'Test',
-                    'author': 'Test Author',
-                    'posts': []}
-        self.assertDictEqual(expected, self.blog.json())
+    def test_create_post_increments_count(self) -> None:
+        """After creating a post, the number of posts is 1."""
+        self.blog.create_post("Test post", "Test Content")
+        self.assertEqual(1, len(self.blog.posts))
 
-    def test_json(self):
-        self.blog.create_post('Test post', 'Test Content')
-        expected = {'title': 'Test',
-                    'author': 'Test Author',
-                    'posts': [{'title': 'Test post',
-                               'content': 'Test Content'}]}
-        self.assertDictEqual(expected, self.blog.json())
+    def test_create_post_sets_title(self) -> None:
+        """Created post has the correct title."""
+        self.blog.create_post("Test post", "Test Content")
+        self.assertEqual("Test post", self.blog.posts[0].title)
+
+    def test_create_post_sets_content(self) -> None:
+        """Created post has the correct content."""
+        self.blog.create_post("Test post", "Test Content")
+        self.assertEqual("Test Content", self.blog.posts[0].content)
+
+    # --- json with no posts (split) ---
+
+    def test_json_no_post_has_title(self) -> None:
+        """JSON has correct blog title when there are no posts."""
+        self.assertEqual("Test", self.blog.json()["title"])
+
+    def test_json_no_post_has_author(self) -> None:
+        """JSON has correct blog author when there are no posts."""
+        self.assertEqual("Test Author", self.blog.json()["author"])
+
+    def test_json_no_post_has_empty_posts(self) -> None:
+        """JSON has empty posts list when there are no posts."""
+        self.assertEqual([], self.blog.json()["posts"])
+
+    # --- json with one post (split) ---
+
+    def test_json_one_post_includes_single_post(self) -> None:
+        """JSON includes exactly one post after creation."""
+        self.blog.create_post("Test post", "Test Content")
+        self.assertEqual(1, len(self.blog.json()["posts"]))
+
+    def test_json_one_post_has_correct_title(self) -> None:
+        """JSON has correct title for the single post."""
+        self.blog.create_post("Test post", "Test Content")
+        self.assertEqual("Test post", self.blog.json()["posts"][0]["title"])
+
+    def test_json_one_post_has_correct_content(self) -> None:
+        """JSON has correct content for the single post."""
+        self.blog.create_post("Test post", "Test Content")
+        self.assertEqual("Test Content", self.blog.json()["posts"][0]["content"])
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
