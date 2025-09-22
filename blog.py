@@ -13,8 +13,6 @@ Example:
     'Tech Notes'
 """
 
-from __future__ import annotations
-
 __author__ = "Mihail Mihaylov"
 
 from typing import List
