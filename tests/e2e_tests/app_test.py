@@ -94,6 +94,16 @@ class TestApp(unittest.TestCase):
             app.ask_create_post()
             self.assertEqual(app.blogs["Test"].posts[0].content, "Test Content")
 
+    def test_ask_read_blog_handles_missing(self) -> None:
+        with patch("builtins.input", return_value="Missing"), patch("builtins.print") as mocked_print:
+            app.ask_read_blog()
+            mocked_print.assert_called_with('No blog found with title "Missing".')
+
+    def test_ask_create_post_handles_missing(self) -> None:
+        with patch("builtins.input", return_value="Missing"), patch("builtins.print") as mocked_print:
+            app.ask_create_post()
+            mocked_print.assert_called_with('No blog found with title "Missing".')
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
